@@ -1,49 +1,68 @@
 import requests
 from bs4 import BeautifulSoup
 import csv
+import time
 
-url = 'http://books.toscrape.com/catalogue/avatar-the-last-airbender-smoke-and-shadow-part-3-smoke-and-shadow-3_881/index.html'
+i = 0
+links = []
 
-response = requests.get(url)
-if response.ok:
-    soup = BeautifulSoup(response.text, 'html.parser')
+while True:
+    i += 1
+    urls = 'http://books.toscrape.com/catalogue/category/books/fantasy_19/page-' + str(i) + '.html'
+    response = requests.get(urls)
 
-    trs = soup.findAll('tr')
+    if response.ok:
+        soup = BeautifulSoup(response.text, 'html.parser')
 
-    upc = trs[0].find('td')
-    priceIncl = trs[3].find('td')
-    priceExcl = trs[2].find('td')
+        urlBooks = soup.findAll('div', {'class': 'image_container'})
+        classNext = soup.find('li', {'class': 'next'})
 
-    nbrAvailable = trs[5].find('td')
-    nbr = int(''.join(filter(str.isdigit, nbrAvailable.text)))
+        for urlBook in urlBooks:
+            a = urlBook.find('a')
+            link = a['href']
+            links.append('http://books.toscrape.com/catalogue/' + link[9:])
 
-    title = soup.find('h1')
-    description = soup.find('p', {'class': ''})
+    if not response.ok:
+        break
 
-    category = soup.findAll('li')[2]
-    rating = soup.find('p', {'class': 'star-rating'}).get('class')
+with open('urlsBooks.csv', 'w') as outp:
+    books = csv.writer(outp, delimiter=',')
+    for link in links:
+        outp.write(link + '\n')
 
-    urlImgRaw = soup.find('div', {'class': 'item active'}).find('img')
-    urlImg = urlImgRaw.get('src')[6:]
+with open('urlsBooks.csv', 'r') as inf:
+    with open('books.csv', 'w', encoding='ISO-8859-1') as outf:
+        booksFile = csv.writer(outf, delimiter=',', quoting=csv.QUOTE_NONE, quotechar="")
 
-    # print(url)
-    # print(upc.text)
-    # print(title.text)
-    # print(priceIncl.text[1:])
-    # print(priceExcl.text[1:])
-    # print(nbr)
-    # print(description.text)
-    # print(category.text[1:-1])
-    # print(' '.join(rating)[12:])
-    # print('http://books.toscrape.com/' + urlImg)
-    # print(description.text)
+        outf.write('product_page_url, universal_product_code, title, '
+                   'price_including_tax, price_excluding_tax, number_available,'
+                   'product_description, category, review_rating, image_url\n')
 
-    with open('books.csv', 'w') as outf:
-        booksFile = csv.writer(outf, delimiter=";")
-        outf.write('product_page_url; universal_product_code; title; '
-                   'price_including_tax; price_excluding_tax; number_available;'
-                   'product_description; category; review_rating; image_url\n')
+        for row in inf:
+            url = row.strip()
+            responseBooks = requests.get(url)
 
-        outf.write(url + ';' + upc.text + ';' + title.text + ';' + priceIncl.text[1:] + ';' + priceExcl.text[1:] +
-                   ';' + str(nbr) + ';' + description.text + ';' + category.text[1:-1] + ';' + ' '.join(rating)[12:] +
-                   ';' + 'http://books.toscrape.com/' + urlImg)
+            if responseBooks.ok:
+                soup = BeautifulSoup(responseBooks.text, 'html.parser')
+                trs = soup.findAll('tr')
+
+                upc = trs[0].find('td')
+                priceIncl = trs[3].find('td')
+                priceExcl = trs[2].find('td')
+
+                nbrAvailable = trs[5].find('td')
+                nbr = int(''.join(filter(str.isdigit, nbrAvailable.text)))
+
+                title = soup.find('h1')
+                description = soup.find('p', {'class': ''})
+
+                category = soup.findAll('li')[2]
+                rating = soup.find('p', {'class': 'star-rating'}).get('class')
+
+                urlImgRaw = soup.find('div', {'class': 'item active'}).find('img')
+                urlImg = urlImgRaw.get('src')[6:]
+
+                outf.write(url + ',' + upc.text + ',' + '"' + title.text + '"' + ',' + priceIncl.text[1:] + ',' +
+                           priceExcl.text[1:] + ',' + str(nbr) + ',' + '"' + description.text.replace('"', '""') + '"' + ',' +
+                           category.text[1:-1] + ',' + ' '.join(rating)[12:] + ',' +
+                           'http://books.toscrape.com/' + urlImg + '\n')
