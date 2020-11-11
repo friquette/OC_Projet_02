@@ -4,10 +4,16 @@ import csv
 import os.path
 import shutil
 
-currentFolder = os.getcwd()
-csvFolder = currentFolder + '/csv'
-if not os.path.exists(csvFolder):
-    os.mkdir(csvFolder)
+with open('config.txt', 'r') as conf:
+    csvFolder = conf.read().strip(' \n')
+    if csvFolder == '':
+        currentFolder = os.getcwd()
+        csvFolder = currentFolder + '/csv'
+        if not os.path.exists(currentFolder):
+            os.mkdir(csvFolder)
+    else:
+        if not os.path.exists(csvFolder):
+            os.mkdir(csvFolder)
 
 
 def getContent(myPath):
