@@ -1,11 +1,13 @@
 import requests
 from bs4 import BeautifulSoup
+import csv
 import shutil
+import os.path
 
 
 def getContent(myPath, linkBooks, url):
     responseContent = requests.get(linkBooks)
-    soupContent = BeautifulSoup(responseContent.text, 'html.parser')
+    soupContent = BeautifulSoup(responseContent.text, 'lxml')
 
     trs = soupContent.findAll('tr')
     upc = trs[0].find('td')
@@ -28,9 +30,10 @@ def getContent(myPath, linkBooks, url):
 
     urlImgRaw = soupContent.find('div', {'class': 'item active'}).find('img')
     urlImg = urlImgRaw.get('src')[6:]
-
     urlImgFull = url + urlImg
+
     responseImage = requests.get(urlImgFull, stream=True)
+
     imageName = urlImgFull.split('/')[-1]
     imagePath = myPath + '/' + imageName
 
@@ -56,3 +59,38 @@ def writeFile(nameOutput, func):
 def writeContent(outp, categoryPath, linkBooks, url):
     writeFile(outp, getContent(categoryPath, linkBooks, url))
     dlImage(getContent(categoryPath, linkBooks, url))
+
+
+def main(url):
+    mainUrl = 'http://books.toscrape.com/'
+    with open('config.txt', 'r') as conf:
+        csvFolder = conf.read().strip(' \n')
+        if csvFolder == '':
+            currentFolder = os.getcwd()
+            csvFolder = currentFolder + '/csv'
+            if not os.path.exists(csvFolder):
+                os.mkdir(csvFolder)
+        else:
+            if not os.path.exists(csvFolder):
+                os.mkdir(csvFolder)
+
+        response = requests.get(url)
+        file = csvFolder + '/book.csv'
+
+        if response.ok:
+            with open(file, 'w', encoding='utf-8') as outp:
+                csv.writer(outp, delimiter=',', quoting=csv.QUOTE_NONE, quotechar="")
+                outp.write('product_page_url, universal_product_code, title, '
+                           'price_including_tax, price_excluding_tax, number_available,'
+                           'product_description, category, review_rating, image_url\n')
+
+                writeContent(outp, csvFolder, url, mainUrl)
+
+
+if __name__ == '__main__':
+    with open('url.txt', 'r') as urlConf:
+        url = urlConf.read().strip('\n')
+        if url == '':
+            print('Please enter a valid url')
+        else:
+            main(url)
