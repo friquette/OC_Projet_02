@@ -1,32 +1,48 @@
+"""This module scrapes all the http://books.toscrape.com website."""
 import requests
 from bs4 import BeautifulSoup
 import os.path
-import scrapCategory
+import scrapeCategory
 
-with open('config.txt', 'r') as conf:
-    csvFolder = conf.read().strip(' \n')
-    if csvFolder == '':
-        currentFolder = os.getcwd()
-        csvFolder = currentFolder + '/csv'
-        if not os.path.exists(currentFolder):
-            os.mkdir(csvFolder)
-    else:
-        if not os.path.exists(csvFolder):
-            os.mkdir(csvFolder)
 
-url = 'http://books.toscrape.com/'
-response = requests.get(url)
+def main():
+    """Scrapes the website homepage.
 
-if response.ok:
-    soupCtg = BeautifulSoup(response.text, 'lxml')
-    menuCtg = soupCtg.findAll('ul', {'class': 'nav nav-list'})
-    categories = menuCtg[0].find('ul').findAll('li')
+    Reads the config.txt file to find the path where the results will be saved (the project root
+    folder by default).
+    Parse the homepage and retrieves links of all categories.
+    Calls the browsePages function of the scrapCategory module.
 
-    for category in categories:
-        a = category.find('a')
-        link = a['href']
-        links = url + link
+    """
 
-        urlCategories = links[0:-10]
+    with open('config.txt', 'r') as conf:
+        csvFolder = conf.read().strip(' \n')
+        if csvFolder == '':
+            currentFolder = os.getcwd()
+            csvFolder = currentFolder + '/csv'
+            if not os.path.exists(currentFolder):
+                os.mkdir(csvFolder)
+        else:
+            if not os.path.exists(csvFolder):
+                os.mkdir(csvFolder)
 
-        scrapCategory.browsePages(urlCategories, csvFolder, url)
+    url = 'http://books.toscrape.com/'
+    response = requests.get(url)
+
+    if response.ok:
+        soupCtg = BeautifulSoup(response.text, 'lxml')
+        menuCtg = soupCtg.findAll('ul', {'class': 'nav nav-list'})
+        categories = menuCtg[0].find('ul').findAll('li')
+
+        for category in categories:
+            a = category.find('a')
+            link = a['href']
+            links = url + link
+
+            urlCategories = links[0:-10]
+
+            scrapeCategory.browsePages(urlCategories, csvFolder, url)
+
+
+if __name__ == '__main__':
+    main()
