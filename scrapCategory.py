@@ -26,8 +26,8 @@ def browsePages(urlCategories, csvFolder, url):
 
             if not classNext:
                 categoryPath = csvFolder + '/' + nameCategory
+                print(csvFolder)
                 if not os.path.exists(categoryPath):
-                    print('folder: ' + csvFolder)
                     os.makedirs(categoryPath)
 
                 with open(categoryPath + '/' + nameCategory + '.csv', 'w', encoding='utf-8') as outp:
@@ -40,7 +40,6 @@ def browsePages(urlCategories, csvFolder, url):
 
             else:
                 i = 0
-
                 categoryPath = csvFolder + '/' + nameCategory
                 if not os.path.exists(categoryPath):
                     os.mkdir(categoryPath)
@@ -63,3 +62,31 @@ def browsePages(urlCategories, csvFolder, url):
 
                         if not responsePages.ok:
                             break
+
+
+def main(url):
+    mainUrl = 'http://books.toscrape.com/'
+
+    with open('config.txt', 'r') as conf:
+        csvFolder = conf.read().strip(' \n')
+        if csvFolder == '':
+            currentFolder = os.getcwd()
+            csvFolder = currentFolder + '/csv'
+            if not os.path.exists(csvFolder):
+                os.makedirs(csvFolder)
+        else:
+            if not os.path.exists(csvFolder):
+                os.mkdir(csvFolder)
+
+        response = requests.get(url)
+        if response.ok:
+            browsePages(url, csvFolder, mainUrl)
+
+
+if __name__ == '__main__':
+    with open('url.txt', 'r') as urlConf:
+        url = urlConf.read().strip('\n')[:-10]
+        if url == '':
+            print('Please enter a valid url')
+        else:
+            main(url)
