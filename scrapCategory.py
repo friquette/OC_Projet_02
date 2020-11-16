@@ -4,18 +4,20 @@ import csv
 import os.path
 import scrapBook
 
-def getCategories(categories, url, csvFolder):
-    for category in categories:
-        i = 0
 
-        a = category.find('a')
-        link = a['href']
-        links = url + link
+def getLinkBooks(urlBooks, url, outp, categoryPath):
+    for urlBook in urlBooks:
+        aBooks = urlBook.find('a')
+        linkBook = aBooks['href']
+        linkBooks = url + 'catalogue/' + linkBook[9:]
 
-        urlCategories = links[0:-10]
+        scrapBook.writeContent(outp, categoryPath, linkBooks, url)
+
+
+def browsePages(urlCategories, csvFolder, url):
         responseBooks = requests.get(urlCategories)
-
         if responseBooks.ok:
+
             soupBooks = BeautifulSoup(responseBooks.text, 'html.parser')
             urlBooks = soupBooks.findAll('div', {'class': 'image_container'})
 
@@ -25,6 +27,7 @@ def getCategories(categories, url, csvFolder):
             if not classNext:
                 categoryPath = csvFolder + '/' + nameCategory
                 if not os.path.exists(categoryPath):
+                    print('folder: ' + csvFolder)
                     os.makedirs(categoryPath)
 
                 with open(categoryPath + '/' + nameCategory + '.csv', 'w', encoding='utf-8') as outp:
@@ -33,13 +36,11 @@ def getCategories(categories, url, csvFolder):
                                'price_including_tax, price_excluding_tax, number_available,'
                                'product_description, category, review_rating, image_url\n')
 
-                    for urlBook in urlBooks:
-                        aBooks = urlBook.find('a')
-                        linkBook = aBooks['href']
-                        linkBooks = url + 'catalogue/' + linkBook[9:]
+                    getLinkBooks(urlBooks, url, outp, categoryPath)
 
-                        scrapBook.writeContent(outp, categoryPath, linkBooks, url)
             else:
+                i = 0
+
                 categoryPath = csvFolder + '/' + nameCategory
                 if not os.path.exists(categoryPath):
                     os.mkdir(categoryPath)
@@ -58,12 +59,7 @@ def getCategories(categories, url, csvFolder):
                             soupPages = BeautifulSoup(responsePages.text, 'html.parser')
                             urlBooks = soupPages.findAll('div', {'class': 'image_container'})
 
-                            for urlBook in urlBooks:
-                                aBooks = urlBook.find('a')
-                                linkBook = aBooks['href']
-                                linkBooks = url + 'catalogue/' + linkBook[9:]
-
-                                scrapBook.writeContent(outp, categoryPath, linkBooks, url)
+                            getLinkBooks(urlBooks, url, outp, categoryPath)
 
                         if not responsePages.ok:
                             break

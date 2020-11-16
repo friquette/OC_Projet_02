@@ -18,8 +18,15 @@ url = 'http://books.toscrape.com/'
 response = requests.get(url)
 
 if response.ok:
-    soupCtg = BeautifulSoup(response.text, 'html.parser')
+    soupCtg = BeautifulSoup(response.text, 'lxml')
     menuCtg = soupCtg.findAll('ul', {'class': 'nav nav-list'})
     categories = menuCtg[0].find('ul').findAll('li')
 
-    scrapCategory.getCategories(categories, url, csvFolder)
+    for category in categories:
+        a = category.find('a')
+        link = a['href']
+        links = url + link
+
+        urlCategories = links[0:-10]
+
+        scrapCategory.browsePages(urlCategories, csvFolder, url)
