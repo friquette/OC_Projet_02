@@ -32,17 +32,17 @@ Install the packages <br>
 ## How to use it
 You can use the script 3 different ways
 
->#### Scrape the entire website: <br>
-> Simply execute the script.py file <br>
->`python script.py` 
+- #### Scrape the entire website: <br>
+    Simply execute the script.py file <br>
+    `python script.py` 
 
->#### Scrape a specified category <br>
->Execute the scrapeCategory.py file with the category url you want as argument <br>
->`python scrapeCategory.py <my_category_url>`
+- #### Scrape a specified category <br>
+    Execute the scrapeCategory.py file with the category url you want as argument <br>
+    `python scrapeCategory.py <my_category_url>`
 
->#### Scrape a specified product
->Execute the scrapeBook.py file with the product url you want as argument <br>
->`python scrapeBook.py <my_book_url>`
+- #### Scrape a specified product
+    Execute the scrapeBook.py file with the product url you want as argument <br>
+    `python scrapeBook.py <my_book_url>`
 
 You can specify the path where you want to save the files, in the config.txt file.
 By default a csv folder will be created in the root project folder.
