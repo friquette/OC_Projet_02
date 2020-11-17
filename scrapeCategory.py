@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import csv
 import os.path
 import scrapeBook
+import sys
 
 
 def getLinkBooks(urlBooks, url, outp, categoryPath):
@@ -43,7 +44,7 @@ def browsePages(urlCategories, csvFolder, url):
 
     responseBooks = requests.get(urlCategories)
     if responseBooks.ok:
-        soupBooks = BeautifulSoup(responseBooks.text, 'html.parser')
+        soupBooks = BeautifulSoup(responseBooks.text, 'lxml')
         urlBooks = soupBooks.findAll('div', {'class': 'image_container'})
 
         classNext = soupBooks.find('li', {'class': 'next'})
@@ -79,7 +80,7 @@ def browsePages(urlCategories, csvFolder, url):
                     responsePages = requests.get(urlPages)
 
                     if responsePages.ok:
-                        soupPages = BeautifulSoup(responsePages.text, 'html.parser')
+                        soupPages = BeautifulSoup(responsePages.text, 'lxml')
                         urlBooks = soupPages.findAll('div', {'class': 'image_container'})
 
                         getLinkBooks(urlBooks, url, outp, categoryPath)
@@ -118,9 +119,5 @@ def main(url):
 
 
 if __name__ == '__main__':
-    with open('url.txt', 'r') as urlConf:
-        url = urlConf.read().strip('\n')[:-10]
-        if url == '':
-            print('Please enter a valid url')
-        else:
-            main(url)
+    url = sys.argv[1][:-10]
+    main(url)

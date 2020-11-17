@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import csv
 import shutil
 import os.path
+import sys
 
 
 def getContent(myPath, linkBooks, url):
@@ -140,9 +141,5 @@ def main(url):
 
 
 if __name__ == '__main__':
-    with open('url.txt', 'r') as urlConf:
-        url = urlConf.read().strip('\n')
-        if url == '':
-            print('Please enter a valid url')
-        else:
-            main(url)
+    url = sys.argv[1]
+    main(url)
