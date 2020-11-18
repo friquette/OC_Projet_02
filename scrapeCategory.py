@@ -85,7 +85,7 @@ def browsePages(urlCategories, csvFolder, url):
 
                         getLinkBooks(urlBooks, url, outp, categoryPath)
 
-                    if not responsePages.ok:
+                    else:
                         break
 
 

@@ -43,10 +43,7 @@ def getContent(myPath, linkBooks, url):
     title = soupContent.find('h1')
 
     description = soupContent.find('p', {'class': ''})
-    if description:
-        descriptionBook = description.text
-    else:
-        descriptionBook = ''
+    descriptionBook = description.text if description else ''
 
     bookCategory = soupContent.findAll('li')[2]
     rating = soupContent.find('p', {'class': 'star-rating'}).get('class')

@@ -36,12 +36,9 @@ def main():
 
         for category in categories:
             a = category.find('a')
-            link = a['href']
-            links = url + link
+            link = url + a['href']
 
-            urlCategories = links[0:-10]
-
-            scrapeCategory.browsePages(urlCategories, csvFolder, url)
+            scrapeCategory.browsePages(link[0:-10], csvFolder, url)
 
 
 if __name__ == '__main__':
