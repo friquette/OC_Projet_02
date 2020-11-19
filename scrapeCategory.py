@@ -12,7 +12,7 @@ def get_link_books(url_books, url, out_file, category_path):
     """Retrieves urls of all books in the pages
 
     Retrieves url of each book in all books urls of the pages.
-    Calls the writeContent function of the scrapeBook module.
+    Calls the write_content function of the scrapeBook module.
     Parameters:
     urls_books -- list of all books urls
     url -- url of the page to scrape
@@ -33,9 +33,9 @@ def browse_pages(url_categories, csv_folder, url):
     """Browses all the pages of the category
 
     Parses the page.
-    If the tag class 'next' isn't in the page, calls the getLinkBooks function.
+    If the tag class 'next' isn't in the page, calls the get_link_books function.
     If the tag class 'next' is in the page, increment the 'page-x' part of the url while
-    the condition is true. Then calls the getLinkBooks function.
+    the condition is true. Then calls the get_link_books function.
     Parameters:
     url_categories -- list of all categories urls
     csv_folder -- the path the files will be saved into
@@ -93,11 +93,10 @@ def browse_pages(url_categories, csv_folder, url):
 def main(url):
     """Used if the module is executed as a script.
 
-    Reads the config.txt file to find the path where the results will be saved (the project root
-    folder by default).
-    Calls the browsePages function.
+    Calls the get_path_user function of the utility module to get the path the user entered in the console.
+    Calls the browse_pages function.
     Parameter:
-    url -- the page url to scrape
+    url -- the page url to scrape entered by the user
 
     """
     utility.get_path_user()

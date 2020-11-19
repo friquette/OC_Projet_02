@@ -30,19 +30,33 @@ Install the packages <br>
 `pip install -r requirements.txt`
 
 ## How to use it
+When you execute a script, a "csv" folder will be created in 
+the folder path you want. <br>
 You can use the script 3 different ways
 
 - #### Scrape the entire website: <br>
-    Simply execute the script.py file <br>
-    `python script.py` 
+    Execute the script.py file with the folder path you want as
+    argument<br>
+    `python script.py <my_folder_path>` <br>
+    
+    A folder for each category will be created in the "csv" folder. 
+    The .csv file and images associated will be created 
+    in each category folder.
 
 - #### Scrape a specified category <br>
-    Execute the scrapeCategory.py file with the category url you want as argument <br>
-    `python scrapeCategory.py <my_category_url>`
+    Execute the scrapeCategory.py file with the folder path
+    and the category url you want as arguments <br>
+    `python scrapeCategory.py <my_folder_path> <my_category_url>` <br>
+    
+    A folder named after the category will be created in the
+    "csv" folder. The .csv file and images associated will be 
+    created in the category folder.
 
 - #### Scrape a specified product
-    Execute the scrapeBook.py file with the product url you want as argument <br>
-    `python scrapeBook.py <my_book_url>`
+    Execute the scrapeBook.py file with the folder path and the
+    product url you want as arguments <br>
+    `python scrapeBook.py <my_folder_path> <my_book_url>` <br>
+    
+    The .csv file and image associated will be created in the 
+    "csv" folder.
 
-You can specify the path where you want to save the files, in the config.txt file.
-By default a csv folder will be created in the root project folder.

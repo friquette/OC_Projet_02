@@ -15,18 +15,8 @@ def get_content(my_path, link_books, url):
     my_path -- the path the files will be saved into
     link_books -- the page url to scrape
     url -- the homepage url
-    Returns:
-    link_books -- page url of the book
-    upc -- universal product code
-    title -- the book's title
-    price_incl -- price including taxes
-    price_excl -- price excluding taxes
-    nbr -- number of books available
-    description_book -- the book's description
-    book_category -- the book's category
-    rating -- the review rating of the book
-    response_image -- the request of the image url
-    image_path -- the path the image is saved into
+    Return:
+    book_info -- a dictionary with all the useful variables
 
     """
     response_content = requests.get(link_books)
@@ -66,7 +56,13 @@ def get_content(my_path, link_books, url):
 
 
 def dl_image(book_info):
-    """Saves the image of the book."""
+    """Saves the image of the book.
+
+    Get the response_image of the book_info dictionary and create a binary file to store the image
+    into.
+    Parameter:
+    book_info -- a dictionary containing the different information of the book webpage
+    """
     if book_info['response_image'].ok:
         book_info['response_image'].raw.decode_content = True
         with open(book_info['image_path'], 'wb') as f:
@@ -76,12 +72,12 @@ def dl_image(book_info):
 
 
 def write_file(name_output, book_info):
-    """Writes the content in the file
+    """Writes the file
 
-    Writes the return values of the getContent function in a file.
+    Writes the values of the get_content function dictionary in a file.
     Parameters:
     name_output -- the name of the file the return values will be write into
-    func -- the function the return values are taken from
+    book_function -- a dictionary containing the different information of the book webpage
 
     """
     name_output.write(book_info['link_books'] + ',' + book_info['upc'].text + ',' + '"' + book_info['title'].text + '"' +
@@ -94,9 +90,9 @@ def write_file(name_output, book_info):
 def write_content(out_file, category_path, link_books, url):
     """Writes all the information in the file
 
-    Calls the writeFile and the dlImage functions.
+    Calls the write_file and the dl_image functions.
     Parameters:
-    out_file -- the name of file the information will be written into
+    out_file -- the name of the file the information will be written into
     category_path -- the path the files will be saved into
     link_books -- the page url to scrape
     url -- the homepage url
@@ -110,11 +106,11 @@ def write_content(out_file, category_path, link_books, url):
 def main(url):
     """Used if the module is executed as a script.
 
-    Reads the config.txt file to find the path where the results will be saved (the project root
-    folder by default).
-    Calls the writeContent function.
+    Calls the get_path_user function of the utility module to get the path the user entered in the console.
+    Creates the file the information will be store into.
+    Calls the write_content function.
     Parameter:
-    url -- the page url to scrape
+    url -- the page url to scrape entered by the user
 
     """
 
