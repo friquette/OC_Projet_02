@@ -57,21 +57,25 @@ def get_content(my_path, link_books, url):
     image_name = url_img_full.split('/')[-1]
     image_path = my_path + '/' + image_name
 
-    return (link_books, upc, title, price_incl, price_excl, nbr, description_book, book_category,
-            rating, response_image, image_path)
+    book_info = {'link_books': link_books, 'upc': upc, 'title': title, 'price_incl': price_incl,
+                 'price_excl': price_excl, 'nbr': nbr, 'description_book': description_book,
+                 'book_category': book_category, 'rating': rating, 'response_image': response_image,
+                 'url_image_full': url_img_full, 'image_path': image_path}
+
+    return book_info
 
 
-def dl_image(func):
+def dl_image(book_info):
     """Saves the image of the book."""
-    if func[9].ok:
-        func[9].raw.decode_content = True
-        with open(func[10], 'wb') as f:
-            shutil.copyfileobj(func[9].raw, f)
+    if book_info['response_image'].ok:
+        book_info['response_image'].raw.decode_content = True
+        with open(book_info['image_path'], 'wb') as f:
+            shutil.copyfileobj(book_info['response_image'].raw, f)
     else:
-        print('Image not found')
+        print('Image not found for this book: ' + book_info['title'])
 
 
-def write_file(name_output, func):
+def write_file(name_output, book_info):
     """Writes the content in the file
 
     Writes the return values of the getContent function in a file.
@@ -80,9 +84,11 @@ def write_file(name_output, func):
     func -- the function the return values are taken from
 
     """
-    name_output.write(func[0] + ',' + func[1].text + ',' + '"' + func[2].text + '"' + ',' + func[3].text[2:] + ',' +
-                      func[4].text[2:] + ',' + str(func[5]) + ',' + '"' + func[6].replace('"', '""') + '"' + ',' +
-                      func[7].text[1:-1] + ',' + ' '.join(func[8])[12:] + ',' + func[10] + '\n')
+    name_output.write(book_info['link_books'] + ',' + book_info['upc'].text + ',' + '"' + book_info['title'].text + '"' +
+                      ',' + book_info['price_incl'].text[2:] + ',' + book_info['price_excl'].text[2:] +
+                      ',' + str(book_info['nbr']) + ',' + '"' + book_info['description_book'].replace('"', '""') +
+                      '"' + ',' + book_info['book_category'].text[1:-1] + ',' + ' '.join(book_info['rating'])[12:] +
+                      ',' + book_info['url_image_full'] + ',' + book_info['image_path'] + '\n')
 
 
 def write_content(out_file, category_path, link_books, url):
@@ -124,7 +130,7 @@ def main(url):
             csv.writer(out_file, delimiter=',', quoting=csv.QUOTE_NONE, quotechar="")
             out_file.write('product_page_url, universal_product_code, title, '
                            'price_including_tax, price_excluding_tax, number_available,'
-                           'product_description, category, review_rating, image_url\n')
+                           'product_description, category, review_rating, image_url, image_path \n')
 
             write_content(out_file, utility.get_path_user(), url, main_url)
 
