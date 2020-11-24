@@ -37,7 +37,7 @@ You can use the script 3 different ways
 - #### Scrape the entire website: <br>
     Execute the script.py file with the folder path you want as
     argument<br>
-    `python script.py <my_folder_path>` <br>
+    `python booksToScrape.py <my_folder_path>` <br>
     
     A folder for each category will be created in the "csv" folder. 
     The .csv file and images associated will be created 
